@@ -1,11 +1,47 @@
 "use client"
-import { useProfile } from "@//hooks/user/useProfile";
+import { AvatarModal } from "@//components/modals/user/avatar";
+import { ModalPasword } from "@//components/modals/user/updatePass";
+import { useConfirm } from "@//providers/confirmProvider";
+import { useDeleteCount, useProfile } from "@//query/user/useProfile";
+import { useUpdateProfile } from "@//query/user/useUpdate";
 import { useAuth } from "@//services/auth.guard";
+import { useState } from "react";
 
 export default function User() {
-  const{user}= useAuth()
-  const{data,isLoading}=useProfile(user.id)
-  
+
+  const { user, logout } = useAuth()
+  const { data, isLoading } = useProfile(user.id)
+
+  const [avatar, setAvatar] = useState<string | null>(null)
+  const [activeModal, setActiveModal] = useState<null | "avatar" | "password">(null)
+  const UpdateProfile =useUpdateProfile()
+  const deleteUser = useDeleteCount()
+  const confirm = useConfirm()
+  async function handleExit() {
+  const ok = await confirm({
+      title:"Desejar sair da conta?",
+      description:"sua conta continuara ativa"
+  })
+  if(!ok) return
+  logout()
+}
+  async function handleDelete() {
+  const ok = await confirm({
+      title:"Desejar deletar sua conta?",
+      description:"essa acao nao pode ser desfeita"
+  })
+  if(!ok) return
+  deleteUser.mutate()
+}
+  async function saveAvatar() {
+    if (!avatar) return
+    UpdateProfile.mutate(avatar,{
+      onSuccess:()=>{
+        setActiveModal(null)
+      }
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-60">
@@ -16,13 +52,15 @@ export default function User() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-      
+
       {/* HEADER */}
       <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow">
+
         <img
-          src={data.avatarUrl ?? "/avatar-placeholder.png"}
-          alt={data.name}
-          className="w-20 h-20 rounded-full object-cover border"
+          src={avatar ?? data.avatar ??
+          `https://api.dicebear.com/7.x/thumbs/svg?seed=${data.name}`}
+          className="w-20 h-20 rounded-full border cursor-pointer"
+          onClick={() => setActiveModal("avatar")}
         />
 
         <div className="flex-1">
@@ -30,10 +68,27 @@ export default function User() {
           <p className="text-sm text-zinc-500">{data.email}</p>
         </div>
 
-        <button className="text-sm px-4 py-2 rounded-lg border hover:bg-zinc-100 dark:hover:bg-zinc-800">
-          Editar perfil
+        <button
+          onClick={() => setActiveModal("avatar")}
+          className="text-sm px-4 py-2 rounded-lg border hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        >
+          Trocar avatar
         </button>
+
       </div>
+
+      {/* MODAL */}
+      {activeModal === "avatar" &&(
+      <AvatarModal
+      open
+      name={data.name}
+      avatar={avatar}
+      loading={UpdateProfile.isPending}
+      onClose={() => setActiveModal(null)}
+      onSelect={setAvatar}
+      onSave={saveAvatar}
+      />
+    )}
 
       {/* STATS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -45,14 +100,27 @@ export default function User() {
 
       {/* ACTIONS */}
       <div className="flex gap-3">
-        <button className="px-4 py-2 rounded-lg bg-black text-white hover:opacity-90">
+        <button onClick={()=>setActiveModal("password")}
+        className="px-4 py-2 rounded-lg bg-black text-white hover:opacity-90">
           Alterar senha
         </button>
+        {activeModal ==="password" &&(
+         <ModalPasword open onClose={()=>setActiveModal(null)}/>
+        )}
 
-        <button className="px-4 py-2 rounded-lg border text-red-500 hover:bg-red-50">
+        <button 
+        onClick={()=>handleExit()}
+        className="px-4 py-2 rounded-lg border text-zinc-500 hover:bg-red-50">
           Sair da conta
         </button>
+
+        <button 
+        onClick={()=>handleDelete()}
+        className="px-4 py-2 rounded-lg border text-red-500 hover:bg-red-50">
+          Deletar conta
+        </button>
       </div>
+
     </div>
   );
 }

@@ -27,7 +27,7 @@ import { addMemberType, Comments, Tasks } from "../types/manyType";
 
 
  export async function CreateComments(content:Comments,taskId:string) {
-   const res = await api.post(`/project/task/${taskId}/comments`,content)
+   const res = await api.post(`/task/${taskId}/comments`,content)
    return res.data
  }
 
@@ -50,3 +50,39 @@ import { addMemberType, Comments, Tasks } from "../types/manyType";
     const res = await api.post(`/project/${projectId}/members`,data)
     return res.data
  }
+
+ export async function updateProfile(avatar:string){
+   const res = await api.patch("/auth/avatarUser",{avatar})
+   return res.data
+ }
+
+  export async function sendMessagesFriend(friendId:string,content:string){
+   const res = await api.post(`/chat/${friendId}`,{content})
+   return res.data
+ }
+
+   export async function RequestFriend(friendId:string){
+   const res = await api.post(`/friend/request/${friendId}`)
+   return res.data
+ }
+
+ export async function AcceptRequest(friendId:string){
+   const res = await api.post(`/friend/accept/${friendId}`)
+   return res.data
+ }
+
+ export async function RejectRequest(friendId:string){
+   const res = await api.post(`/friend/reject/${friendId}`)
+   return res.data
+ }
+
+//   export async function AcceptInviteProject(inviteId:string){
+//    const res = await api.post(`/project/accept/${inviteId}`)
+//    return res.data
+//  }
+
+ 
+//   export async function RejectInviteProject(inviteId:string,memberId:string){
+//    const res = await api.post(`/project/accept/${inviteId}/${memberId}`)
+//    return res.data
+//  }

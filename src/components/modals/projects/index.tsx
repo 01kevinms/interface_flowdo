@@ -1,7 +1,7 @@
 "use client";
 
-import { useCreateProject } from "@//hooks/project/useCreateProject";
-import { ModalProps, ProjectTypes, TaskStatus } from "@//types/manyType";
+import { useCreateProject } from "@//query/project/useCreateProject";
+import { ModalProps, ProjectTypes, TaskPriority, TaskStatus } from "@//types/manyType";
 import { X, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -21,7 +21,7 @@ export function CreateProjectModal({ open, onClose }: ModalProps) {
         {
           title: "",
           description: "",
-          priority: 1,
+          priority: TaskPriority.LOW,
           status: TaskStatus.TODO,
         },
       ],
@@ -116,14 +116,16 @@ export function CreateProjectModal({ open, onClose }: ModalProps) {
                 />
 
                 <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    {...register(`task.${index}.priority`, {
-                      valueAsNumber: true,
-                    })}
-                    className="w-24 rounded border p-2"
-                  />
+                  <select 
+                  {...register(`task.${index}.priority`)}
+                  className="flex-1 rounded border p-2"
+                  >
+                    {Object.values(TaskPriority).map((priority)=>(
+                      <option key={priority} value={priority}>
+                        {priority}
+                      </option>
+                    ))}
+                  </select>
 
                   <select
                     {...register(`task.${index}.status`)}
@@ -155,7 +157,7 @@ export function CreateProjectModal({ open, onClose }: ModalProps) {
                 append({
                   title: "",
                   description: "",
-                  priority: 1,
+                  priority: TaskPriority.LOW,
                   status: TaskStatus.TODO,
                 })
               }

@@ -1,10 +1,11 @@
 "use client"
-import { Tasks, TaskStatus } from "@//types/manyType";
+import { TaskPriority, Tasks, TaskStatus } from "@//types/manyType";
 import { CreateCommentModal } from "../../modals/comments/comments";
 import { useAuth } from "@//services/auth.guard";
-import { useDeleteTask } from "@//hooks/task/useDeleteTask";
-import { useUpdatePriority, useUpdateTaskStatus } from "@//hooks/task/useUpdateTask";
+import { useDeleteTask } from "@//query/task/useDeleteTask";
+import { useUpdatePriority, useUpdateTaskStatus } from "@//query/task/useUpdateTask";
 import { useState } from "react";
+import { useConfirm } from "@//providers/confirmProvider";
 
 function statusColor(status: TaskStatus | any) {
      switch (status) { 
@@ -25,14 +26,24 @@ type Props = {
 export function TaskColumn({ title, tasks, projectId }: Props) {
   const [comments, setComments] = useState<string | null>(null);
   const { mutate } = useUpdateTaskStatus(projectId);
-  const {
-    mutate: updatePriority,
-    isPending: isUpdatingPriority,
-    variables: priorityVariables,
-  } = useUpdatePriority(projectId);
+  const {mutate: updatePriority,isPending: isUpdatingPriority,variables: priorityVariables,} = useUpdatePriority(projectId);
   const { mutate: deletetask } = useDeleteTask(projectId);
   const { user } = useAuth();
-console.log()
+  const priorities = [
+  TaskPriority.URGENT,
+  TaskPriority.HIGH,
+  TaskPriority.MEDIUM,
+  TaskPriority.LOW
+];
+const confirm= useConfirm()
+async function handleDelete(taskId:string) {
+  const ok = await confirm({
+    title:"Deletar task",
+    description:"Essa acao nao pode ser desfeita"
+  })
+  if(!ok) return
+  deletetask(taskId)
+}
   function handleChange(taskId: string, status: TaskStatus) {
     mutate(
       { taskId, status },
@@ -46,7 +57,7 @@ console.log()
     );
   }
 
-  function handlePriority(taskId:string,priority:number){
+  function handlePriority(taskId:string,priority:TaskPriority){
     updatePriority({taskId,priority})
   }
 
@@ -108,7 +119,7 @@ console.log()
               <div className="mt-3 flex justify-between items-center text-xs">
                 <select
                   value={task.priority}
-                  onChange={(e) => handlePriority(task.id!, Number(e.target.value))}
+                  onChange={(e) => handlePriority(task.id!, e.target.value as TaskPriority)}
                   disabled={
                     isUpdatingPriority && priorityVariables?.taskId === task.id
                   }
@@ -116,15 +127,15 @@ console.log()
                     ${isLocked  ? "opacity-50 cursor-not-allowed":""}
                     `}
                 >
-                  {[1,2,3,4,5].map((n)=>(
-                    <option value={n} key={n}>
-                      Prioridade {n}
+                  {priorities.map((priority)=>(
+                    <option value={priority} key={priority}>
+                      {priority}
                     </option>
                   ))}
                 </select>
 
                 <button
-                  onClick={() => deletetask(task.id!)} disabled={!!isLocked}
+                  onClick={() => handleDelete(task.id!)} disabled={!!isLocked}
                   className="text-red-500 hover:text-red-700"
                 >
                   Deletar

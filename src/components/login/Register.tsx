@@ -17,10 +17,10 @@ export function RegisterCard() {
     try {
       await register(name,email,password)
       route.push("/");
-    } catch (err: any) {
-      console.error("Erro no registro:", err);
-      alert(err?.message || "Erro ao fazer registro");
-    }
+    } catch(err:any){
+  console.error("Erro:", err.response?.data || err.message)
+}
+console.log(name,email)
   }
   return (
     <section

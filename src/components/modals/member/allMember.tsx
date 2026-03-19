@@ -1,5 +1,9 @@
 import { X } from "lucide-react"
 import { memberType, RolesMember } from "@//types/manyType"
+import { useRemoveMember } from "@//query/project/useDeleteProject"
+import { useParams } from "next/navigation"
+import { useAuth } from "@//services/auth.guard"
+import { useUpdateRoleMember } from "@//query/project/useAddMember"
 
 type Props = {
   open: boolean
@@ -7,6 +11,17 @@ type Props = {
   data: memberType[]
 }
 export function ModalMembers({ open, close, data }: Props) {
+  
+  const {projectId}=useParams<{projectId:string}>()
+  const { user } = useAuth()
+  const remove =useRemoveMember(projectId)
+  const updateRole = useUpdateRoleMember(projectId)
+  const currentMember = data.find((member)=>member.user.id === user.id)
+  const canRemove = currentMember?.role === "ADMIN" || currentMember?.role === "OWNER";
+
+  function canManageMembers(role?: RolesMember) {
+  return role === "OWNER" || role === "ADMIN"
+  }
   return (
     <div
       className={`
@@ -39,7 +54,11 @@ export function ModalMembers({ open, close, data }: Props) {
 
         {/* LIST */}
         <div className="space-y-3 overflow-y-auto">
-          {data.map((member, index) => (
+          {data.map((member, index)=>{ 
+            const canChangeRole = canManageMembers(currentMember?.role) && 
+            member.user.id !== user.id && !(currentMember?.role === "ADMIN" && member.role === "OWNER")
+
+            return(
             <div
               key={index}
               className="flex justify-between border rounded-lg p-3"
@@ -51,19 +70,52 @@ export function ModalMembers({ open, close, data }: Props) {
                 </p>
               </div>
 
-               <span
+            
+                {canChangeRole ?(
+                  <select
+                value={member.role}
+                
+                onChange={(e)=>updateRole.mutate({
+                  memberId:member.id,
+                  role:e.target.value as RolesMember
+                })}
                 className={`text-xs font-semibold px-2 py-1 rounded ${
                   member.role === RolesMember.MEMBER
-                    ? "bg-purple-100 text-purple-700"
-                    : member.role === "ADMIN"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-200 text-red-600"
-                }`}
-              >
-                {member.role}
-              </span>
+                  ? "bg-purple-100 text-purple-700"
+                  : member.role === "ADMIN"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-200 text-red-600"
+                  }`}
+                  >
+                {Object.values(RolesMember).map((role)=>(
+                  <option 
+                 
+                  value={role} key={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+                ):(
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                  member.role === RolesMember.MEMBER
+                  ? "bg-purple-100 text-purple-700"
+                  : member.role === "ADMIN"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-200 text-red-600"
+                  }`}>
+                    {member.role}
+                    </span>
+                )}
+            
+               
+              {canRemove && member.user.id !== user.id &&(
+                <button
+                className="text-red-500 hover:text-red-700 text-sm border rounded-lg p-1 cursor-pointer"
+                onClick={()=>remove.mutate(member.user.id)}
+                >Remover</button>
+              )}
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </div>

@@ -44,3 +44,55 @@ import api from "../services/axios.api"
     const res = await api.get("/auth/notification/user")
     return res.data
  }
+
+  export async function GetConversations(friendId:string) {
+    const res = await api.get(`/chat/${friendId}`)
+    return res.data
+ }
+ 
+  export async function GetChatsUser() {
+    const res = await api.get("/chat")
+    return res.data
+ }
+
+   export async function GetFriendsSend() {
+    const res = await api.get("/friend/send")
+    return res.data
+ }
+
+ export async function GetFriendsReceived() {
+    const res = await api.get("/friend/received")
+    return res.data
+ }
+ 
+ export async function GetFriends() {
+   const res = await api.get("/friend")
+   return res.data
+ }
+
+  export async function GetFriendStatus(friendId:string) {
+    const res = await api.get(`/friend/status/${friendId}`)
+    return res.data
+ }
+
+   export async function SearchFriend(q:string) {
+    const res = await api.get("/friend/search",{
+      params:{q}
+    })
+    return res.data
+ }
+
+   export async function GetProfileFriend(friendId:string) {
+    const res = await api.get(`/friend/profile/${friendId}`)
+    return res.data
+ }
+
+    export async function GetMembers(projectId:string) {
+    const res = await api.get(`/project/members/${projectId}`)
+    return res.data
+ }
+
+   export async function GetInvites() {
+   const res = await api.get("/project/invites/user")
+   return res.data
+   }

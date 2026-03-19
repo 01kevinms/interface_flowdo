@@ -8,7 +8,8 @@ const menu = [
   { label: "Dashboard", href: "/" },
   { label: "Projetos", href: "/projects" },
   { label: "Usuário", href: "/user" },
-  { label: "Time", href: "/team" },
+  { label: "Amigos", href: "/friends" },
+  { label: "Conversas", href: "/chat" },
   { label: "Configurações", href: "/settings" },
 ];
 

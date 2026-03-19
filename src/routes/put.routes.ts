@@ -1,7 +1,7 @@
 import api from "../services/axios.api"
-import { TaskStatus } from "../types/manyType"
+import { TaskPriority, TaskStatus, updateRoleType } from "../types/manyType"
 
- export async function updatePriority(taskId:string,priority:number) {
+ export async function updatePriority(taskId:string,priority:TaskPriority) {
    const res = await api.put(`/task/${taskId}/priority`,{priority})
    return res.data
  }
@@ -22,3 +22,22 @@ import { TaskStatus } from "../types/manyType"
     return res.data
 }
 
+ export async function updatePassword(data:{currentPassword:string;newPassword:string}){
+   const res = await api.put("/auth/updatePassword",data)
+   return res.data
+ }
+
+ export async function RejectInviteProject(inviteId:string,membeId:string) {
+    const res = await api.put(`/project/reject/${inviteId}/${membeId}`)
+    return res.data
+}
+
+ export async function AcceptInviteProject(inviteId:string) {
+    const res = await api.put(`/project/accept/${inviteId}`)
+    return res.data
+}
+
+ export async function UpdateRoleMember(projectId:string,data:updateRoleType) {
+    const res = await api.put(`/project/role/${projectId}`,data)
+    return res.data
+}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useDeleteProject } from "@//hooks/project/useDeleteProject";
-import { useProjects } from "@//hooks/project/useProjects";
+import { useConfirm } from "@//providers/confirmProvider";
+import { useDeleteProject } from "@//query/project/useDeleteProject";
+import { useProjects } from "@//query/project/useProjects";
 import { useAuth } from "@//services/auth.guard";
 import { Calendar, ListChecks } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -11,8 +12,14 @@ export function CardProjects() {
   const { user } = useAuth()
   const deleteProject = useDeleteProject()
   const router = useRouter();
-
-  function handleDelete(projectId: string){
+  
+  const confirm = useConfirm()
+  async function handleDelete(projectId: string){
+    const ok = await confirm({
+      title:"Deletar Projeto",
+      description:"Essa acao nao pode ser desfeita"
+    })
+    if(!ok) return
     deleteProject.mutate(projectId)
   }
 

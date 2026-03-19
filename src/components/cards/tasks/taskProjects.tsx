@@ -1,7 +1,7 @@
 "use client";
 
 import { Tasks, TaskStatus } from "@//types/manyType";
-import { useProjectTasks } from "@//hooks/project/useProject";
+import { useProjectTasks } from "@//query/project/useProject";
 import { useAuth } from "@//services/auth.guard";
 import { TaskColumn } from "./taskColum";
 

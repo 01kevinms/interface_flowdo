@@ -3,9 +3,11 @@
 
 import { Sidebar } from "@//components/menu";
 import { Navbar } from "@//components/menu/NavBar";
+import { ConfirmProvider } from "@//providers/confirmProvider";
 import { ReactQueryProvider } from "@//providers/reac-query";
 import {  useAuth } from "@//services/auth.guard";
 import { redirect } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default function PrivateLayout({
   children,
@@ -26,8 +28,10 @@ export default function PrivateLayout({
           <ReactQueryProvider>
         <Navbar />
         <main className="flex-1 p-6 bg-gray-100">
+          <ConfirmProvider>
                    {children}
-          
+          </ConfirmProvider>
+          <Toaster richColors />
         </main>
           </ReactQueryProvider>
       </div>

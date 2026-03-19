@@ -1,16 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Plus, UserPlus } from "lucide-react";
+import { DoorOpen, Plus, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { ProjectTypes, TaskStatus } from "@//types/manyType";
 import { TasksModal } from "../../modals/tasks";
 import { ActionButton } from "../../button";
 import { CommentsList } from "../comment/commentList";
-import { useProjectTasks } from "@//hooks/project/useProject";
+import { useGetMembers, useProjectTasks } from "@//query/project/useProject";
 import { AddMemberModal } from "../../modals/projects/addMember";
 import { ModalMembers } from "../../modals/member/allMember";
 import { TasksProject } from "../tasks/taskProjects";
+import { useConfirm } from "@//providers/confirmProvider";
+import { useExitProject } from "@//query/project/useDeleteProject";
 
 type Props = {
   data: ProjectTypes;
@@ -22,7 +24,7 @@ export function ProjectLayout({ data }: Props) {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const router = useRouter()
   const { data: project, isLoading } = useProjectTasks(data.id);
-  const members = Array.isArray(data.members) ? data.members : [];
+  const{data:members=[]}=useGetMembers(data.id)
   
   
   const isVisibleTask = (status: TaskStatus) =>
@@ -35,6 +37,19 @@ export function ProjectLayout({ data }: Props) {
   doing: task.filter((t:any) => t.status === TaskStatus.DOING).length,
   done: task.filter((t:any) => t.status === TaskStatus.DONE).length,
 };
+
+const exitproject = useExitProject()
+const confirm = useConfirm()
+async function handleExit(projectId:string) {
+  const ok = await confirm({
+    title:"deseja sair do projeto",
+    description:""
+  })
+  if(!ok) return
+exitproject.mutate(projectId,{
+  onSuccess:()=>router.push(`/projects`)
+})
+}
 
 const userId = project?.ownerId
 const isOwner = data.ownerId === userId;
@@ -86,6 +101,13 @@ if (isLoading) return <p>Carregando...</p>;
           <button className="text-sm text-blue-600 hover:underline" onClick={()=>setOpenMembers(true)}>
             ver Membros
           </button>
+          <button
+          onClick={()=>handleExit(data.id)}
+          className="border rounded-md p-2 flex hover:scale-110 transition-all cursor-pointer"
+          >
+            <DoorOpen/>
+            sair do projeto
+          </button>
             <ModalMembers open={openMember} close={()=>setOpenMembers(false)} data={members}/>
            
         </section>
@@ -101,6 +123,7 @@ if (isLoading) return <p>Carregando...</p>;
 
       {/* {isOwner && ( */}
         <AddMemberModal
+          member={members}
           open={isMemberModalOpen}
           onClose={() => setIsMemberModalOpen(false)}
           projectId={data.id}

@@ -8,6 +8,7 @@ import {
   PenLine,
   User,
 } from "lucide-react";
+import { useState } from "react";
 
 export function getIcon(type: string) {
   switch (type) {
@@ -64,3 +65,58 @@ export function formatRelative(date: string) {
   const days = Math.floor(hours / 24);
   return `Há ${days}d`;
 }
+
+type Props = {
+  name: string
+  onSelect: (avatar: string) => void
+  defaultAvatar?: string
+  seedBase:string
+}
+
+export function AvatarSelector({ name, onSelect, defaultAvatar,seedBase }: Props) {
+
+  const [selected, setSelected] = useState<string | null>(defaultAvatar ?? null)
+
+  const avatars = Array.from({ length: 8 }, (_, i) =>
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}-${seedBase}-${i}`
+  )
+
+  function handleSelect(avatar: string) {
+    setSelected(avatar)
+    onSelect(avatar)
+  }
+
+  return (
+    <div className="grid grid-cols-4 gap-4">
+      {avatars.map((avatar) => {
+
+        const isSelected = selected === avatar
+
+        return (
+          <button
+            key={avatar}
+            onClick={() => handleSelect(avatar)}
+            className={`relative rounded-full transition transform
+              ${isSelected ? "scale-110" : "hover:scale-105"}
+            `}
+          >
+            <img
+              src={avatar}
+              className={`w-20 h-20 rounded-full border-2 
+              ${isSelected ? "border-blue-500" : "border-zinc-300"}
+              `}
+            />
+
+            {isSelected && (
+              <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                ✓
+              </div>
+            )}
+
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+

@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { useCreateComment } from "@//hooks/project/useComments";
+import { useCreateComment } from "@//query/project/useComments";
 import { useAuth } from "@//services/auth.guard";
 
 export function CreateCommentModal({taskId,onClose,}
   : {taskId: string,onClose: () => void}) {
   const {user} = useAuth()
   const [content, setContent] = useState("");
-  const { mutate, isPending } = useCreateComment(taskId,user.id);
+  const { mutate, isPending } = useCreateComment(taskId,user.name,user.id);
 
   function handleSubmit() {
     mutate({ content },{onSuccess: () => {onClose();

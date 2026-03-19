@@ -1,6 +1,6 @@
 "use client";
 
-import { useComments } from "@//hooks/project/useComments";
+import { useComments } from "@//query/project/useComments";
 import { CommentCard } from "./CardComments";
 
 

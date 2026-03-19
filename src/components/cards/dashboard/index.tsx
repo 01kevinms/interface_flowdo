@@ -1,6 +1,6 @@
 "use client";
 
-import { useUserActivity } from "@//hooks/dashboard/useActivity";
+import { useUserActivity } from "@//query/dashboard/useActivity";
 import { formatActivity, formatRelative, getIcon } from "@//utils/manyUtils";
 
 export function DashboardActivity() {

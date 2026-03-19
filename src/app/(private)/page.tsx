@@ -5,7 +5,7 @@ import { Plus, FolderKanban, CheckCircle2, Clock, ListTodo } from "lucide-react"
 import { useRouter } from "next/navigation";
 
 import { MetricCard } from "@//components/cards/dashboard/MetricCard";
-import { useDashboard } from "@//hooks/dashboard/useCreateActivity";
+import { useDashboard } from "@//query/dashboard/useCreateActivity";
 import { ActionButton } from "@//components/button";
 import { CreateProjectModal } from "@//components/modals/projects";
 import { DashboardActivity } from "@//components/cards/dashboard";

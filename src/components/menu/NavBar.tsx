@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { NotificationList } from "../modals/user/notification";
-import { useNotifications } from "@//hooks/user/userNotification";
+import { useNotifications } from "@//query/user/userNotification";
 import { Bell } from "lucide-react";
 
 export function Navbar() {

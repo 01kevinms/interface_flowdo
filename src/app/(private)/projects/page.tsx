@@ -3,15 +3,17 @@ import { ActionButton } from "@//components/button"
 import { CardProjects } from "@//components/cards/project/projects"
 import { EmptyState } from "@//components/emptyResponse"
 import { emptyConfig } from "@//components/emptyResponse/config"
-import { useProjects } from "@//hooks/project/useProjects"
+import { CreateProjectModal } from "@//components/modals/projects"
+import { useProjects } from "@//query/project/useProjects"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 
 export default function Projects(){
-    const[,setOpen]=useState(false)
+    const[open,setOpen]=useState(false)
     const { data: projects = [] } = useProjects()
     return(
         <div>
+            
             <CardProjects/>     
 
         {projects.length === 0 && (
@@ -23,6 +25,7 @@ export default function Projects(){
             </ActionButton>}
             />
         )}
+        <CreateProjectModal onClose={()=>setOpen(false)} open={open}/>
         </div>
     )
 }

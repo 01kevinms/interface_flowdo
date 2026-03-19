@@ -1,20 +1,27 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useNotifications } from "@//hooks/user/userNotification";
+import { useGetInvites, useNotifications } from "@//query/user/userNotification";
+import { useAcceptInviteProject, useRejectInviteProject } from "@//query/project/useAddMember";
+import { useAuth } from "@//services/auth.guard";
 
 type Props = {
   open: boolean;
   close: () => void;
 };
-
 export function NotificationList({ open, close }: Props) {
-  const { data, isLoading, markAsRead } = useNotifications();
+  const { data, isLoading, markAsRead } = useNotifications()
 
-  if (!open) return null;
+  const { data: invites = [], isLoading: loadingInvites } = useGetInvites()
+  const {user} = useAuth()
+  const acceptInvite = useAcceptInviteProject(invites.id)
+  const rejectInvite = useRejectInviteProject(invites.id,user.id)
+console.log(invites)
+  if (!open) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end">
+
       {/* BACKDROP */}
       <div
         onClick={close}
@@ -27,17 +34,56 @@ export function NotificationList({ open, close }: Props) {
         {/* HEADER */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">Notificações</h2>
+
           <button
             onClick={close}
-            className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* BODY */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
+          {/* CONVITES */}
+          {loadingInvites ? (
+            <div className="h-16 bg-zinc-100 animate-pulse rounded-lg" />
+          ) : (
+            invites.map((invite: any) => (
+              <div
+                key={invite.id}
+                className="p-4 rounded-xl border bg-blue-50 dark:bg-zinc-800 space-y-3"
+              >
+                <p className="text-sm">
+                  📩 Você foi convidado para o projeto{" "}
+                  <span className="font-semibold">
+                    {invite.project.name}
+                  </span>
+                </p>
+
+                <div className="flex gap-2">
+
+                  <button
+                    onClick={() => acceptInvite.mutate(invite.id)}
+                    className="flex-1 bg-green-600 text-white py-1.5 rounded-lg text-sm hover:bg-green-700"
+                  >
+                    Aceitar
+                  </button>
+
+                  <button
+                    onClick={() => rejectInvite.mutate(invite.id)}
+                    className="flex-1 bg-red-500 text-white py-1.5 rounded-lg text-sm hover:bg-red-600"
+                  >
+                    Recusar
+                  </button>
+
+                </div>
+              </div>
+            ))
+          )}
+
+          {/* NOTIFICAÇÕES */}
           {isLoading && (
             <div className="space-y-3">
               <div className="h-16 bg-zinc-100 animate-pulse rounded-lg" />
@@ -45,7 +91,7 @@ export function NotificationList({ open, close }: Props) {
             </div>
           )}
 
-          {!isLoading && !data?.length && (
+          {!isLoading && !data?.length && invites.length === 0 && (
             <div className="text-center text-zinc-500 py-10">
               Nenhuma notificação
             </div>
@@ -56,8 +102,7 @@ export function NotificationList({ open, close }: Props) {
               key={notif.id}
               onClick={() => markAsRead.mutate(notif.id)}
               className={`
-                p-4 rounded-xl border cursor-pointer transition
-                hover:shadow-md
+                p-4 rounded-xl border cursor-pointer transition hover:shadow-md
                 ${
                   notif.isRead
                     ? "bg-zinc-50 dark:bg-zinc-800"
@@ -97,6 +142,7 @@ export function NotificationList({ open, close }: Props) {
           animation: slideInRight 0.25s ease-out;
         }
       `}</style>
+
     </div>
-  );
+  )
 }

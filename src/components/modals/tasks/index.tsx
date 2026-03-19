@@ -1,7 +1,7 @@
 "use client";
 
-import { useCreateTask } from "@//hooks/task/useCreateTasks";
-import { ModalTask, Tasks, TaskStatus } from "@//types/manyType";
+import { useCreateTask } from "@//query/task/useCreateTasks";
+import { ModalTask, TaskPriority, Tasks, TaskStatus } from "@//types/manyType";
 import { Plus, Trash, X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -15,7 +15,7 @@ const {register,handleSubmit,control,formState:{errors},}=useForm<FormData>({
     tasks:[{
     title:"",
     description:"",
-    priority:1
+    priority:TaskPriority.LOW
   }]}
 })
 const {fields,append,remove}=useFieldArray({control,name:"tasks"})
@@ -84,14 +84,16 @@ if(!open) return null
 
           {/* Footer da task */}
           <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              {...register(`tasks.${index}.priority`, {
-                valueAsNumber: true,
-              })}
-              className="w-20 rounded-lg border px-2 py-2 text-sm"
-            />           
+            <select 
+            {...register(`tasks.${index}.priority`)}
+            className="w-20 rounded-lg border px-2 py-2 text-sm"
+            >
+              {Object.values(TaskPriority).map((priority)=>(
+                <option value={priority} key={priority}>
+                  {priority}
+                </option>
+              ))}
+            </select>          
 
             {fields.length > 1 && (
               <button
@@ -116,7 +118,7 @@ if(!open) return null
           append({
             title: "",
             description: "",
-            priority: 1,
+            priority: TaskPriority.LOW,
             status:TaskStatus.TODO          
           })
         }

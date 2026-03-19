@@ -28,7 +28,15 @@ export interface AuthContextType {
         createdProjectsCount:number
       }
       }
-
+export type FriendPending = {
+  id: string
+  createdAt: string
+  user: {
+    id: string
+    name: string
+    avatar: string
+  }
+}
 export interface ProjectTypes {
   id?:any;
   owner?:{name?:string};
@@ -41,10 +49,12 @@ export interface ProjectTypes {
 }
 
 export interface memberType{
+  id:string
   joinedAt:string
   role: RolesMember
   user:{
-    name:string
+    name:string,
+    id:string
   }
 }
 
@@ -52,7 +62,7 @@ export interface TaskPending{
   id?:string
   title: string;
   description: string;
-  priority: number;
+  priority: TaskPriority;
   requestedBy:{
     name:string
   }
@@ -66,7 +76,7 @@ export interface Tasks {
   }
   title: string;
   description: string;
-  priority: number;
+  priority: TaskPriority;
   status: TaskStatus;
   comments?:ComentsProps[]
 }
@@ -109,6 +119,11 @@ email:string
 role:RolesMember
 }
 
+export interface updateRoleType{
+role:RolesMember,
+memberId:string
+}
+
 export enum TaskStatus {
   TODO = "TODO",
   DOING = "DOING",
@@ -117,5 +132,13 @@ export enum TaskStatus {
 
 export enum RolesMember{
   MEMBER="MEMBER",
-  ADMIN = "ADMIN"
+  ADMIN = "ADMIN",
+  OWNER = "OWNER"
+}
+
+export enum TaskPriority {
+  URGENT = "URGENT",
+  HIGH = "HIGH",
+  MEDIUM = "MEDIUM",
+  LOW = "LOW",
 }
