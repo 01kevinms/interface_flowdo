@@ -35,7 +35,7 @@ export function TogglePanel({ setActive }: Props) {
             Register with your personal details
           </p>
           <button
-            onClick={() => setActive(true)}
+            onClick={() => setActive(false)}
             className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
           >
             Sign Up
@@ -49,7 +49,7 @@ export function TogglePanel({ setActive }: Props) {
             Enter your personal details to use all site features
           </p>
           <button
-            onClick={() => setActive(false)}
+            onClick={() => setActive(true)}
             className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
           >
             Sign In
