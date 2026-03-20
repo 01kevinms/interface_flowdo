@@ -30,20 +30,6 @@ export function TogglePanel({ setActive }: Props) {
           group-[.active]:translate-x-0
         "
         >
-          <h1 className="text-2xl font-bold">Welcome!</h1>
-          <p className="text-sm my-4">
-            Enter your personal details to use all site features
-          </p>
-          <button
-            onClick={() => setActive(false)}
-            className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
-          >
-            Sign In
-          </button>
-        </div>
-
-        {/* RIGHT */}
-        <div className="absolute right-0 w-1/2 h-full flex flex-col items-center justify-center px-8 text-center">
           <h1 className="text-2xl font-bold">Hello, Friend!</h1>
           <p className="text-sm my-4">
             Register with your personal details
@@ -54,6 +40,21 @@ export function TogglePanel({ setActive }: Props) {
           >
             Sign Up
           </button>
+        </div>
+
+        {/* RIGHT */}
+        <div className="absolute right-0 w-1/2 h-full flex flex-col items-center justify-center px-8 text-center">
+         <h1 className="text-2xl font-bold">Welcome!</h1>
+          <p className="text-sm my-4">
+            Enter your personal details to use all site features
+          </p>
+          <button
+            onClick={() => setActive(false)}
+            className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
+          >
+            Sign In
+          </button>
+         
         </div>
       </div>
     </section>
