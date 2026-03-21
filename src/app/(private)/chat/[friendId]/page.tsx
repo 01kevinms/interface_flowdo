@@ -9,15 +9,15 @@ import { useParams, useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
 
 export default function ConversationPage() {
+  const [content, setContent] = useState("")
   const { friendId } = useParams() as { friendId: string }
   const { user } = useAuth()
   const { data: conversations = [], isLoading } = useGetMessage(friendId)
+  const {data:profile} = useProfile(user.id)
   const sendMessage = useCreateChat()
-  const [content, setContent] = useState("")
+
   const bottomRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-const {data:profile} = useProfile(user.id)
-
   const messages = conversations ?? []
 
   useEffect(() => {
@@ -39,103 +39,112 @@ const {data:profile} = useProfile(user.id)
    return <Loading/>
  }
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-[#121212]">
+return (
+  <div className="flex flex-col h-screen bg-zinc-50 dark:bg-zinc-950">
 
-      {/* HEADER */}
-      <div className="flex items-center gap-3 border-b p-4 bg-white dark:bg-[#1c1c1c] shadow-sm">
+    {/* HEADER */}
+    <header className="flex items-center gap-3 px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 sticky top-0 z-10">
 
-        <button
-          onClick={() => router.back()}
-          className="text-xl hover:opacity-70"
-        >
-          ←
-        </button>
-        
-        <img
-          src={profile?.avatar ?? "/default-avatar.png"}
-          className="w-9 h-9 rounded-full object-cover cursor-pointer"
-          onClick={() => router.push(`/friends/profile/${friendId}`)}
-        />
+      <button
+        onClick={() => router.back()}
+        className="text-lg hover:opacity-70 transition"
+      >
+        ←
+      </button>
 
-        <div className="font-semibold">
-          Conversa
-        </div>
+      <img
+        src={profile?.avatar ?? "/default-avatar.png"}
+        className="w-9 h-9 rounded-full object-cover cursor-pointer"
+        onClick={() => router.push(`/friends/profile/${friendId}`)}
+      />
 
+      <div className="flex flex-col">
+        <span className="text-sm font-medium text-zinc-800 dark:text-white">
+          {profile?.name ?? "Conversa"}
+        </span>
+
+        <span className="text-xs text-zinc-500">
+          online recentemente
+        </span>
       </div>
 
+    </header>
 
-      {/* MESSAGES */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    {/* MESSAGES */}
+    <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
 
-        {messages.map((msg: any) => {
+      {messages.map((msg: any) => {
+        const isMine = msg.senderId === user.id;
 
-          const isMine = msg.senderId === user.id
+        return (
+          <div
+            key={msg.id}
+            className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"}`}
+          >
 
-          return (
+            {/* AVATAR LEFT */}
+            {!isMine && (
+              <img
+                src={msg.sender?.avatar ?? "/default-avatar.png"}
+                className="w-7 h-7 rounded-full object-cover cursor-pointer"
+                onClick={() => router.push(`/friends/profile/${msg.senderId}`)}
+              />
+            )}
+
+            {/* BUBBLE */}
             <div
-              key={msg.id}
-              className={`flex items-end gap-2 ${
-                isMine ? "justify-end" : "justify-start"
-              }`}
+              className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm flex flex-col
+                ${isMine
+                  ? "bg-blue-600 text-white rounded-br-md"
+                  : "bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-bl-md border border-zinc-200 dark:border-zinc-700"
+                }
+              `}
             >
+              <span className="break-words">
+                {msg.content}
+              </span>
 
-              {!isMine && (
-                <img
-                  src={msg.sender?.avatar ?? "/default-avatar.png"}
-                  className="w-8 h-8 rounded-full object-cover cursor-pointer"
-                  onClick={() => router.push(`/friends/profile/${msg.senderId}`)}
-                />
-              )}
-
-              <div
-                className={`flex flex-col px-4 py-2 rounded-2xl max-w-[70%] text-sm ${
-                  isMine
-                    ? "bg-blue-500 text-white rounded-br-md"
-                    : "bg-white dark:bg-zinc-800 rounded-bl-md"
-                }`}
-              >
-                <span>{msg.content}</span>
-
-                <span className="text-[10px] opacity-60 mt-1 self-end">
-                  {new Date(msg.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })}
-                </span>
-              </div>
-
-              {isMine && (
-                <img
-                  src={msg.sender?.avatar ?? "/default-avatar.png"}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              )}
-
+              <span className="text-[10px] opacity-60 mt-1 self-end">
+                {new Date(msg.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </span>
             </div>
-          )
-        })}
 
-        <div ref={bottomRef} />
-      </div>
+            {/* AVATAR RIGHT */}
+            {isMine && (
+              <img
+                src={msg.sender?.avatar ?? "/default-avatar.png"}
+                className="w-7 h-7 rounded-full object-cover"
+              />
+            )}
+          </div>
+        );
+      })}
 
+      <div ref={bottomRef} />
 
-      {/* INPUT */}
-      <div className="border-t bg-white dark:bg-[#1c1c1c] p-3 flex gap-2 items-center">
+    </div>
+
+    {/* INPUT */}
+    <div className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3">
+
+      <div className="flex items-center gap-2">
 
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Digite uma mensagem..."
-          className="flex-1 bg-gray-100 dark:bg-zinc-800 px-4 py-2 rounded-full outline-none"
+          className="flex-1 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           onKeyDown={(e) => {
-            if (e.key === "Enter") handleSend()
+            if (e.key === "Enter") handleSend();
           }}
         />
 
         <button
           onClick={handleSend}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition"
+          className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm transition"
         >
           Enviar
         </button>
@@ -143,5 +152,7 @@ const {data:profile} = useProfile(user.id)
       </div>
 
     </div>
-  )
+
+  </div>
+);
 }

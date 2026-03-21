@@ -8,22 +8,30 @@ type CommentCardProps = {
 };
 
 export function CommentCard({ comment }: CommentCardProps) {
-  return (
-    <div className="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-md">
-      <header className="mb-2 flex items-center gap-2 text-sm text-zinc-600">
-        <MessageSquare size={16} />
-        <span className="font-medium text-zinc-800">
-          {comment.author?.name ?? "Anonimo"}
-        </span>
-        <span className="text-xs text-zinc-400">
-          • {comment.createdAt
-          ? new Date(comment.createdAt).toLocaleDateString("pt-BR") : "agora"}
-        </span>
-      </header>
+ return (
+  <div className="rounded-xl border border-zinc-200 dark:border-zinc-800bg-white dark:bg-zinc-900 p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200">
+    {/* HEADER */}
+    <header className="mb-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="flex items-center gap-2 min-w-0">
+        <MessageSquare size={14} />
 
-      <p className="text-sm text-zinc-700 whitespace-pre-line">
-        {comment.content}
-      </p>
-    </div>
-  );
+        <span className="font-medium text-zinc-800 dark:text-zinc-100 truncate max-w-[120px] sm:max-w-none">
+          {comment.author?.name ?? "Anônimo"}
+        </span>
+      </div>
+
+      <span className="text-[10px] sm:text-xs text-zinc-400 whitespace-nowrap">
+        •{" "}
+        {comment.createdAt
+          ? new Date(comment.createdAt).toLocaleDateString("pt-BR")
+          : "agora"}
+      </span>
+    </header>
+
+    {/* CONTENT */}
+    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line break-words">
+      {comment.content}
+    </p>
+  </div>
+);
 }

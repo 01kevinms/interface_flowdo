@@ -1,8 +1,13 @@
+import Loading from "../emptyResponse/config";
+
 interface Props {
   setActive: (v: boolean) => void;
 }
 
 export function TogglePanel({ setActive }: Props) {
+  
+  if(!setActive)return <Loading/>
+
   return (
     <section
       className="
@@ -36,7 +41,7 @@ export function TogglePanel({ setActive }: Props) {
           </p>
           <button
             onClick={() => setActive(false)}
-            className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
+            className="border cursor-pointer hover:scale-110 transition-all border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
           >
             Sign Up
           </button>
@@ -50,7 +55,7 @@ export function TogglePanel({ setActive }: Props) {
           </p>
           <button
             onClick={() => setActive(true)}
-            className="border border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
+            className="border cursor-pointer hover:scale-110 transition-all border-white px-10 py-3 rounded-lg text-xs uppercase font-semibold"
           >
             Sign In
           </button>

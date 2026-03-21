@@ -1,26 +1,35 @@
 "use client";
 
-import { useAuth } from "@//services/auth.guard";
+import { useRegister } from "@//query/user/useLogin";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function RegisterCard() {
   const[name,setName]=useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const{register}=useAuth()
-  const route = useRouter()
-
-  async function handleSubmit(e:React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    try {
-      await register(name,email,password)
-      route.push("/");
-    } catch(err:any){
-  console.error("Erro:", err.response?.data || err.message)
-}
-console.log(name,email)
+const [isLoading,setisLoading]= useState(false)
+  const router = useRouter()
+  const registerMutation =useRegister()
+  
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setisLoading(true)
+    registerMutation.mutate(
+      { name, email, password },
+      {
+        onSuccess: () => {
+          toast.success("Registro feito!");
+          router.push("/");
+          setisLoading(false)
+        },
+        onError: () => {
+          toast.error("Erro ao registrar");
+        },
+      }
+      
+    );
   }
   return (
     <section
@@ -39,31 +48,38 @@ console.log(name,email)
            use your email for registration
         </span>
 
-        <input
+       <input
           className="bg-[#eee] my-2 py-3 px-4 text-sm rounded-lg w-full outline-none"
           placeholder="Name"
           value={name}
           onChange={(e)=>setName(e.target.value)}
-          autoComplete="username"
+          autoComplete="name"
         />
+
         <input
           className="bg-[#eee] my-2 py-3 px-4 text-sm rounded-lg w-full outline-none"
           placeholder="Email"
           value={email}
           onChange={(e)=>setEmail(e.target.value)}
-          autoComplete="current-email"
+          autoComplete="email"
         />
         <input
           className="bg-[#eee] my-2 py-3 px-4 text-sm rounded-lg w-full outline-none"
           placeholder="Password"
           value={password}
           onChange={(e)=>setPassword(e.target.value)}
-          autoComplete="current-password"
+          autoComplete="new-password"
           type="password"
         />
 
-        <button type="submit" className="bg-[#512da8] text-white text-xs py-3 px-10 rounded-lg uppercase font-semibold">
-          Create
+       <button
+          type="submit"
+          disabled={isLoading} // desabilita enquanto carrega
+          className={`bg-[#512da8] text-white text-xs py-3 px-10 rounded-lg uppercase font-semibold transition-all ${
+            isLoading ? "opacity-50 cursor-not-allowed" : "hover:scale-110"
+          }`}
+        >
+          {isLoading ? "carregando..." : "Criar"} 
         </button>
       </form>
     </section>

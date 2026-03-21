@@ -22,34 +22,47 @@ const stats = {
   done: tasks.filter((t:any)=> t.status === TaskStatus.DONE),
 };
 
-  return (
-    <section className="flex flex-col gap-6 w-full">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <TaskColumn
-          title="A Fazer"
-          tasks={stats.todo}
-          projectId={projectId}
-        />
+ return (
+  <section className="flex flex-col gap-6 w-full">
+    <div
+      className="
+        grid 
+        grid-cols-1 
+        sm:grid-cols-2 
+        lg:grid-cols-4 
+        gap-4 sm:gap-6
 
-        <TaskColumn
-          title="Fazendo"
-          tasks={stats.doing}
-          projectId={projectId}
-        />
+        bg-zinc-50 
+        dark:bg-zinc-950 
 
-        <TaskColumn
-          title="Finalizadas"
-          tasks={stats.done}
-          projectId={projectId}
-        />
+        p-3 sm:p-4 
+        rounded-xl
+      "
+    >
+      <TaskColumn
+        title="A Fazer"
+        tasks={stats.todo}
+        projectId={projectId}
+      />
 
-           <TaskColumn
-          title="Ocupadas"
-          tasks={stats.occupied}
-          projectId={projectId}
-        />
+      <TaskColumn
+        title="Fazendo"
+        tasks={stats.doing}
+        projectId={projectId}
+      />
 
-      </div>
-    </section>
-  );
+      <TaskColumn
+        title="Finalizadas"
+        tasks={stats.done}
+        projectId={projectId}
+      />
+
+      <TaskColumn
+        title="Ocupadas"
+        tasks={stats.occupied}
+        projectId={projectId}
+      />
+    </div>
+  </section>
+);
 }

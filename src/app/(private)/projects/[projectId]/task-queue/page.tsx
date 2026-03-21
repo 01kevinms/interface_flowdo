@@ -24,42 +24,70 @@ export default function TaskQueuePage() {
   if (!tasks.length) {
     return <p>Nenhuma task pendente 🎉</p>
   }
-  return (
-    <section className="flex flex-col gap-4">
-      <h1 className="text-xl font-bold">Fila de aprovação</h1>
+ return (
+  <section className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-      {tasks.map((task:TaskPending) => (
+    {/* HEADER */}
+    <div>
+      <h1 className="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-white">
+        Fila de aprovação
+      </h1>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        Tasks aguardando aprovação
+      </p>
+    </div>
+
+    {/* LISTA */}
+    <div className="space-y-3">
+      {tasks.length === 0 && (
+        <p className="text-sm text-center text-zinc-500 py-10">
+          Nenhuma task pendente
+        </p>
+      )}
+
+      {tasks.map((task: TaskPending) => (
         <div
           key={task.id}
-          className="border rounded p-4 flex justify-between items-center"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm hover:shadow-md transition"
         >
-          <div>
-            <p className="font-semibold">{task.title}</p>
-            
-            <p className="text-sm text-gray-500">
-              Solicitado por {task.requestedBy?.name ?? "Desconhecido"}
+          {/* INFO */}
+          <div className="min-w-0">
+            <p className="font-medium text-zinc-800 dark:text-white truncate">
+              {task.title}
+            </p>
+
+            <p className="text-xs text-zinc-500 mt-1">
+              Solicitado por{" "}
+              <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                {task.requestedBy?.name ?? "Desconhecido"}
+              </span>
             </p>
           </div>
 
-          {isowner &&(
-            <div className="flex gap-2">
-            <button
-              onClick={() => acceptTask(task.id!)}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+          {/* ACTIONS */}
+          {isowner && (
+            <div className="flex gap-2 w-full sm:w-auto">
+              
+              <button
+                onClick={() => acceptTask(task.id!)}
+                className="flex-1 sm:flex-none px-3 py-1.5 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition"
               >
-              aceitar
-            </button>
-            <button
-              onClick={() => RejectTask(task.id!)}
-              className="rounded-md bg-rose-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
+                Aceitar
+              </button>
+
+              <button
+                onClick={() => RejectTask(task.id!)}
+                className="flex-1 sm:flex-none px-3 py-1.5 text-sm rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition"
               >
-              rejeitar
-            </button>
-          </div>
-            )}
+                Rejeitar
+              </button>
+
+            </div>
+          )}
         </div>
       ))}
-    </section>
-  )
+    </div>
+  </section>
+);
 }
 

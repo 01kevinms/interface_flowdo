@@ -124,6 +124,47 @@ role:RolesMember,
 memberId:string
 }
 
+export type PropsTaskColum = {
+     title: string; 
+     tasks: Tasks[]; 
+     projectId: any; 
+};
+
+export type PropsTaskCharts = {
+  pending: number;
+  doing: number;
+  done: number;
+};
+
+export type PropsModalMember = {
+  open: boolean
+  close: () => void
+  data: memberType[]
+}
+
+export type PropsAddMember = {
+  projectId: string;
+  open: boolean;
+  onClose: () => void;
+  member:any[]
+};
+
+export type PropsAvatarModal = {
+  open: boolean
+  name: string
+  avatar: string | null
+  loading: boolean
+  onClose: () => void
+  onSelect: (avatar: string) => void
+  onSave: () => void
+}
+
+export type Theme = "light" | "dark"
+export interface ThemeContextType{
+  theme:Theme
+  toggleTheme:()=>void
+}
+
 export enum TaskStatus {
   TODO = "TODO",
   DOING = "DOING",

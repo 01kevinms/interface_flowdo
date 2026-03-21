@@ -23,7 +23,8 @@ export function CommentsList({ taskId }: {taskId: string}) {
   }
 
   return (
-    <div className="mt-3 flex flex-col gap-3">
+    <div className="mt-3 flex flex-col gap-3  dark:border-zinc-800
+      bg-white dark:bg-zinc-900">
       {comments.map((comment:any) => (
         <CommentCard key={comment.id} comment={comment} />
       ))}

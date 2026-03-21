@@ -1,11 +1,9 @@
 "use client";
 import { useState } from "react";
-import { DoorOpen, Plus, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { ProjectTypes, TaskStatus } from "@//types/manyType";
 import { TasksModal } from "../../modals/tasks";
-import { ActionButton } from "../../button";
 import { CommentsList } from "../comment/commentList";
 import { useGetMembers, useProjectTasks } from "@//query/project/useProject";
 import { AddMemberModal } from "../../modals/projects/addMember";
@@ -19,9 +17,8 @@ type Props = {
 };
 
 export function ProjectLayout({ data }: Props) {
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [openMember,setOpenMembers]= useState(false)
-  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const[activeModal,setActiveModal]= useState<"membersList" | "task" | "addmember" |null>(null)
+  
   const router = useRouter()
   const { data: project, isLoading } = useProjectTasks(data.id);
   const{data:members=[]}=useGetMembers(data.id)
@@ -56,110 +53,135 @@ const isOwner = data.ownerId === userId;
 
 if (isLoading) return <p>Carregando...</p>;
   return (
-    <div className="flex flex-col gap-8 p-6 max-w-full mx-auto">
+     <div className="flex flex-col gap-6 p-4 sm:p-6 max-w-6xl mx-auto">
       {/* ===== HEADER ===== */}
-      <header className="flex justify-between items-start border-b pb-4">
+      <header className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 border-b pb-4">
         {/* INFO */}
-        <section className="space-y-1">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
+        <section className="space-y-2 w-full">
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white wrap-break-word">
             {data.name}
           </h1>
 
-          <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl">
+          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl">
             {data.description}
           </p>
 
-          <span className="text-sm text-zinc-400">
-            Criador do projeto: {data.owner!.name}
-          </span>
-
-          <span className="block text-sm text-zinc-400">
-            Criado em{" "}
-            {new Date(data.createdAt).toLocaleDateString("pt-BR")}
-          </span>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1 sm:gap-4 text-xs sm:text-sm text-zinc-400">
+            <span>Criador: {data.owner?.name}</span>
+            <span>
+              Criado em {new Date(data.createdAt).toLocaleDateString("pt-BR")}
+            </span>
+          </div>
         </section>
 
         {/* ACTIONS */}
-        <section className="flex gap-2">
+        <section className="flex flex-col sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
           {isOwner && (
-            <ActionButton             
-              onClick={() => setIsMemberModalOpen(true)}
+            <button
+              onClick={() => setActiveModal("addmember")}
+              className="flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-zinc-900 text-white hover:opacity-90 transition w-full sm:w-auto"
             >
-              <UserPlus size={16} />
               Adicionar membro
-            </ActionButton>
-           )} 
+            </button>
+          )}
 
-          <ActionButton onClick={() => setIsTaskModalOpen(true)}>
-            <Plus size={16} />
-            Criar task
-          </ActionButton>
-
-            <ActionButton onClick={() => router.push(`/projects/${data.id}/task-queue`)}>
-            fila de Task
-          </ActionButton>
-          <button className="text-sm text-blue-600 hover:underline" onClick={()=>setOpenMembers(true)}>
-            ver Membros
-          </button>
           <button
-          onClick={()=>handleExit(data.id)}
-          className="border rounded-md p-2 flex hover:scale-110 transition-all cursor-pointer"
+            onClick={() => setActiveModal("task")}
+            className="flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:opacity-90 transition w-full sm:w-auto"
           >
-            <DoorOpen/>
-            sair do projeto
+            Criar task
           </button>
-            <ModalMembers open={openMember} close={()=>setOpenMembers(false)} data={members}/>
-           
+
+          <button
+            onClick={() => router.push(`/projects/${data.id}/task-queue`)}
+            className="px-3 py-2 text-sm rounded-lg border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition w-full sm:w-auto"
+          >
+            Fila de tasks
+          </button>
+
+          <button
+            onClick={() => setActiveModal("membersList")}
+            className="text-sm text-blue-600 hover:underline text-left sm:text-center"
+          >
+            Ver membros
+          </button>
+
+          <button
+            onClick={() => handleExit(data.id)}
+            className="px-3 py-2 text-sm rounded-lg border hover:bg-red-50 hover:text-red-600 transition w-full sm:w-auto"
+          >
+            Sair do projeto
+          </button>
         </section>
-        
       </header>
 
       {/* MODALS */}
-      <TasksModal
-        open={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        projectId={data.id}
-      />
+      {activeModal === "membersList" && (
+        <ModalMembers open close={() => setActiveModal(null)} data={members} />
+      )}
 
-      {/* {isOwner && ( */}
-        <AddMemberModal
-          member={members}
-          open={isMemberModalOpen}
-          onClose={() => setIsMemberModalOpen(false)}
+      {activeModal === "task" && (
+        <TasksModal
+          open
+          onClose={() => setActiveModal(null)}
           projectId={data.id}
         />
-      {/* )} */}
+      )}
+
+      {activeModal === "addmember" && (
+        <AddMemberModal
+          open
+          member={members}
+          onClose={() => setActiveModal(null)}
+          projectId={data.id}
+        />
+      )}
 
       {/* ===== STATS ===== */}
-      <section className="flex justify-around bg-white p-3 border rounded-sm">
-        <h2 className="text-xl font-semibold">
-          Total ({taskLength})
-        </h2>
-        <h2 className="text-xl font-semibold">
-          Em progresso ({stats.doing})
-        </h2>
-        <h2 className="text-xl font-semibold">
-          Finalizados ({stats.done})
-        </h2>
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white dark:bg-zinc-900 p-4 rounded-xl border">
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl font-semibold">Total</h2>
+          <p className="text-sm text-zinc-500">{taskLength}</p>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl font-semibold">Em progresso</h2>
+          <p className="text-sm text-yellow-500">{stats.doing}</p>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl font-semibold">Finalizados</h2>
+          <p className="text-sm text-green-600">{stats.done}</p>
+        </div>
       </section>
 
       {/* ===== TASKS ===== */}
-      <TasksProject projectId={data.id} />
+      <div className="w-full overflow-x-auto">
+        <TasksProject projectId={data.id} />
+      </div>
 
       {/* ===== COMMENTS ===== */}
-      <section className="m-2">
-        <h2 className="border-b mb-2">Comentários recentes</h2>
+      <section className="space-y-3">
+        <h2 className="border-b pb-1 text-sm sm:text-base font-medium">
+          Comentários recentes
+        </h2>
 
-        {task
-          .filter((t:any) => t.status === TaskStatus.DONE)
-          .map((t:any) => (
-            <div key={t.id} className="rounded-lg border p-3 m-2">
-              <h3 className="font-medium text-sm mb-2">
-                Task: {t.title}
-              </h3>
-              <CommentsList taskId={t.id} />
-            </div>
-          ))}
+        <div className="flex flex-col gap-3">
+          {task
+            .filter((t:any) => t.status === "DONE")
+            .map((t:any) => (
+              <div
+                key={t.id}
+                className="rounded-xl border p-3 sm:p-4 bg-white dark:bg-zinc-900"
+              >
+                <h3 className="font-medium text-sm sm:text-base mb-2 wrap-break-word">
+                  Task: {t.title}
+                </h3>
+
+                <CommentsList taskId={t.id} />
+              </div>
+            ))}
+        </div>
       </section>
     </div>
   );

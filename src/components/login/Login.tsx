@@ -7,20 +7,22 @@ import { useState } from "react";
 export function LoginCard() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setisLoading] = useState(false);
 
   const { login } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    
     e.preventDefault();
-
+setisLoading(true)
     try {
       await login(email, password);
       router.push("/");
     } catch (err: any) {
       console.error("Erro no login:", err);
       alert(err?.message || "Erro ao fazer login");
-    }
+    }finally{setisLoading(false)}
   }
 
   return (
@@ -34,7 +36,7 @@ export function LoginCard() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          autoComplete="current-email"
+          autoComplete="email"
           className="bg-[#eee] my-2 py-3 px-4 text-sm rounded-lg w-full outline-none"
         />
 
@@ -47,8 +49,12 @@ export function LoginCard() {
           className="bg-[#eee] my-2 py-3 px-4 text-sm rounded-lg w-full outline-none"
         />
 
-        <button type="submit" className="bg-[#512da8] text-white text-xs py-3 px-10 rounded-lg uppercase font-semibold">
-          Login
+        <button
+        type="submit" 
+          className={`bg-[#512da8] text-white text-xs py-3 px-10 rounded-lg uppercase font-semibold transition-all ${
+            isLoading ? "opacity-50 cursor-not-allowed" : "hover:scale-110"
+          }`}>
+            {isLoading ? "carregando..." : "entrar"}
         </button>
       </form>
     </section>

@@ -20,62 +20,91 @@ export function ReceivedRequest({ userId }: { userId: string }) {
     )
   }
 
-  return (
+ return (
+  <div className="space-y-3">
+    {received.map((request: any) => (
+      <div
+        key={request.id}
+        className="
+          flex items-center gap-3
+          
+          border border-zinc-200 dark:border-zinc-800
+          
+          bg-white dark:bg-zinc-900
+          
+          p-3 rounded-xl
+          
+          hover:bg-zinc-50 dark:hover:bg-zinc-800
+          transition
+        "
+      >
+        {/* USER */}
+        <div className="flex items-center gap-3 min-w-0">
+          <img
+            onClick={() =>
+              router.push(`/friends/profile/${request.userA.id}`)
+            }
+            src={
+              request.userA?.avatar ||
+              `https://api.dicebear.com/7.x/thumbs/svg?seed=${request.name}`
+            }
+            className="
+              w-9 h-9 sm:w-10 sm:h-10
+              rounded-full object-cover
+              cursor-pointer
+              flex-shrink-0
+            "
+          />
 
-    <div className="space-y-3">
-
-      {received.map((request: any) => (
-
-        <div
-          key={request.id}
-          className="flex items-center justify-between border border-zinc-200 dark:border-zinc-700 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
-        >
-
-          {/* User info */}
-          <div className="flex items-center gap-3">
-
-            <img
-            onClick={()=>router.push(`/friends/profile/${request.userA.id}`)}
-              src={request.userA?.avatar || `https://api.dicebear.com/7.x/thumbs/svg?seed=${request.name}`}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-
-            <span className="font-medium">
-              {request.userA?.name}
-            </span>
-
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2">
-
-            <button
-              disabled={acceptMutation.isPending || rejectMutation.isPending}
-              onClick={() => acceptMutation.mutate(request.id)}
-              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg transition disabled:opacity-50"
-            >
-              {acceptMutation.isPending
-                ? "Aceitando..."
-                : "Aceitar"}
-            </button>
-
-            <button
-              disabled={acceptMutation.isPending || rejectMutation.isPending}
-              onClick={() => rejectMutation.mutate(request.id)}
-              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition disabled:opacity-50"
-            >
-              {rejectMutation.isPending
-                ? "Rejeitando..."
-                : "Rejeitar"}
-            </button>
-
-          </div>
-
+          <span className="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">
+            {request.userA?.name}
+          </span>
         </div>
 
-      ))}
+        {/* ACTIONS */}
+        <div className="ml-auto flex gap-2 flex-shrink-0">
+          <button
+            disabled={
+              acceptMutation.isPending || rejectMutation.isPending
+            }
+            onClick={() => acceptMutation.mutate(request.id)}
+            className="
+              text-xs sm:text-sm
+              
+              bg-green-600 hover:bg-green-700
+              text-white
+              
+              px-3 py-1.5 rounded-lg
+              
+              transition
+              disabled:opacity-50
+            "
+          >
+            {acceptMutation.isPending ? "Aceitando..." : "Aceitar"}
+          </button>
 
-    </div>
-
-  )
+          <button
+            disabled={
+              acceptMutation.isPending || rejectMutation.isPending
+            }
+            onClick={() => rejectMutation.mutate(request.id)}
+            className="
+              text-xs sm:text-sm
+              
+              bg-red-500 hover:bg-red-600
+              text-white
+              
+              px-3 py-1.5 rounded-lg
+              
+              transition
+              disabled:opacity-50
+            "
+          >
+            {rejectMutation.isPending ? "Rejeitando..." : "Rejeitar"}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 }

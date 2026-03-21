@@ -9,6 +9,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
+import { TaskStatus } from "../types/manyType";
 
 export function getIcon(type: string) {
   switch (type) {
@@ -120,3 +121,55 @@ export function AvatarSelector({ name, onSelect, defaultAvatar,seedBase }: Props
   )
 }
 
+export function statusColor(status: TaskStatus | any) {
+     switch (status) { 
+        case TaskStatus.TODO: 
+        return "bg-zinc-200 text-zinc-800"; 
+        case TaskStatus.DOING: 
+        return "bg-yellow-200 text-yellow-800"; 
+        case TaskStatus.DONE: 
+        return "bg-green-200 text-green-800";
+        default: 
+        return ""; 
+      }
+} 
+
+export function MenuButton({ open, setOpen }: any) {
+  return (
+    <button
+      onClick={() => setOpen((prev: any) => !prev)}
+      className={`
+        fixed top-4 left-4 z-[9999]
+        w-10 h-10 flex items-center justify-center
+        rounded-lg
+        
+        bg-white dark:bg-zinc-900
+        border border-zinc-200 dark:border-zinc-800
+        shadow-md
+        
+        hover:bg-zinc-100 dark:hover:bg-zinc-800
+        transition
+      `}
+    >
+      <span
+        className={`absolute h-[2px] w-6 bg-zinc-800 dark:bg-white transition-all duration-300 ${
+          open ? "rotate-45" : "-translate-y-2"
+        }`}
+      />
+      <span
+        className={`absolute h-[2px] w-6 bg-zinc-800 dark:bg-white transition-all duration-300 ${
+          open ? "-rotate-45" : "translate-y-2"
+        }`}
+      />
+    </button>
+  );
+}
+
+export function StatCard({ label, value }: { label: string; value: any }) {
+  return (
+    <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow">
+      <p className="text-sm text-zinc-500">{label}</p>
+      <p className="text-2xl font-semibold mt-1">{value}</p>
+    </div>
+  );
+}

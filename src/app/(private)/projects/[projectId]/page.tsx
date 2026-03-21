@@ -12,10 +12,9 @@ export default function ProjectById() {
 
   if (isLoading) return <div>carregando...</div>
   if (!project) return <div>Projeto não encontrado</div>
-
-  return (
-    <div>
-      <ProjectLayout data={project} />
-    </div>
-  )
+return (
+  <div className="px-4 sm:px-6 py-6">
+    <ProjectLayout data={project} />
+  </div>
+);
 }

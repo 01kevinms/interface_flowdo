@@ -51,12 +51,12 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
 
       {open && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4">
+          <div className=" bg-white dark:bg-zinc-900 rounded-xl p-6 w-full max-w-sm space-y-4">
             <h2 className="text-lg font-semibold">
               {options?.title}
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-300">
               {options?.description}
             </p>
 
