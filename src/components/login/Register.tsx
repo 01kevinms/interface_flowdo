@@ -41,7 +41,7 @@ const [isLoading,setisLoading]= useState(false)
       group-[.active]:z-30
       group-[.active]:animate-[fadeIn_0.7s]" //animate: keyframe in globals.css
     >
-      <form onSubmit={handleSubmit} className="bg-white flex flex-col items-center justify-center px-10 h-full">
+      <form onSubmit={handleSubmit} className="bg-white dark:text-gray-900 flex flex-col items-center justify-center px-10 h-full">
         <h1 className="text-2xl font-bold mb-4">Create Account</h1>
 
         <span className="text-xs mb-4">

@@ -27,7 +27,7 @@ setisLoading(true)
 
   return (
     <section className="absolute top-0 left-0 w-1/2 h-full z-20 transition-all duration-700 ease-in-out group-[.active]:translate-x-full">
-      <form onSubmit={handleSubmit} className="bg-white flex flex-col items-center justify-center px-10 h-full">
+      <form onSubmit={handleSubmit} className="bg-white dark:text-gray-900 flex flex-col items-center justify-center px-10 h-full">
         <h1 className="text-2xl font-bold mb-4">Sign In</h1>
 
         <span className="text-xs mb-4">use your email password</span>
