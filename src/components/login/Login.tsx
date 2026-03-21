@@ -1,28 +1,35 @@
 "use client";
 
+import { useLogin } from "@//query/user/useLogin";
 import { useAuth } from "@//services/auth.guard";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function LoginCard() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setisLoading] = useState(false);
-
-  const { login } = useAuth();
   const router = useRouter();
-
+const loginMutation =useLogin()
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     
     e.preventDefault();
 setisLoading(true)
-    try {
-      await login(email, password);
-      router.push("/");
-    } catch (err: any) {
-      console.error("Erro no login:", err);
-      alert(err?.message || "Erro ao fazer login");
-    }finally{setisLoading(false)}
+     loginMutation.mutate(
+      {  email, password },
+      {
+        onSuccess: () => {
+          toast.success("Login feito!");
+          router.push("/");
+          setisLoading(false)
+        },
+        onError: () => {
+          toast.error("Erro ao fazer Login");
+        },
+      }
+      
+    );
   }
 
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Folder, User, Users, MessageCircle, Settings } from "lucide-react";
+import { useAuth } from "@//services/auth.guard";
 
 const menu = [
   { label: "Dashboard", href: "/", icon: Home },
@@ -15,7 +16,7 @@ const menu = [
 
 export function Sidebar({ open, setOpen }: any) {
   const pathname = usePathname();
-
+const{user}=useAuth()
   return (
     <>
       {/* OVERLAY */}
@@ -66,13 +67,8 @@ export function Sidebar({ open, setOpen }: any) {
         <div
           className="p-4 border-t border-zinc-200 dark:border-zinc-800
             flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400">
-          <span className="truncate">Usuário</span>
+          <span className="truncate">{user.name}</span>
 
-          <button
-            className="p-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-          >
-            <Settings size={18} />
-          </button>
         </div>
       </aside>
     </>
