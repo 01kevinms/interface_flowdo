@@ -178,7 +178,7 @@ const canAdd = currentMember?.role === "ADMIN" || currentMember?.role === "OWNER
                     </span>
                   )}
 
-                  {!isMember && !isPending && canAdd && (
+                  {!isMember && !isPending && !canAdd &&(
                     <button
                       onClick={() => handleAdd(friend.email)}
                       className="
